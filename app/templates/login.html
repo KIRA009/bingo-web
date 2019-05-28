@@ -1,0 +1,91 @@
+{% extends "index.html" %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/register.css' %}">
+{% endblock %}
+	{% block alert %}
+	<div class="container-fluid text-center">
+		<div class="alert alert-danger alert-dismissible col-12 fade show">
+        	<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+        	<strong style="font-size: 15px;">Kindly check your email for a verification link.
+        	If you dont find one, check your spam folder</strong>
+    	</div>
+    </div>
+    {% endblock %}
+	{% block content %}
+			<form method="post">
+				{% csrf_token %}
+				<div class="col-12">
+					<h1 class="heading">Login</h1>
+					<div id="loading" class="d-flex justify-content-center display">
+						<br><br><div class='cube col-12 text-center'>
+			      			<div class='face right'></div>
+			      			<div class='face left'></div>
+			      			<div class='face top'></div>
+			    		</div>
+					</div>
+				<br>
+				<div class="form-group" id="name">
+					<input type="name" name="name" class="form-control" placeholder="Username" autocomplete="off">
+				</div>
+				<div class="form-group" id="password">
+					<input type="password" name="password" class="form-control" autocomplete="off" placeholder="Password">
+				</div>
+				<small class="text-danger message" style="font-size: 1.1em; display: none;"><br><br></small>
+				<button class="register" type="submit" style="font-family: 'Raleway'; padding: 5px 15px; letter-spacing: 1px; margin-bottom: 10px;">LOGIN</button><br>
+			</form>
+			<a href="{%  url 'forgot' %}" style="text-decoration: none; color: #475560;">Forgot Password</a>
+			<br><h3>or login using</h3>
+			<div class="col-12 text-center social">
+					<a href="" class="btn"><i class="fa fa-icon fa-facebook"></i></a>
+					<a href="" class="btn"><i class="fa fa-icon fa-google-plus"></i></a>
+			</div>
+			<div class="col-12 text-center text-danger" style="font-size: 1.2em;">
+				Not registered yet? <a href="{% url 'register' %}" class="text-secondary" style="text-decoration: none;"> Register Here </a>
+			</div>
+		</div>
+	{% endblock %}
+{% block js %}
+<script type="text/javascript">
+	$('button[type="submit"]').click(function(e) {
+		if ( (!$('#name input').hasClass('correct')) || (!$('#password input').hasClass('correct')) ) {
+			$('.message').html('All field requirements have not been fulfilled');
+			e.preventDefault();
+			return false;
+		}
+		e.preventDefault();
+		$('#loading').addClass('logging').removeClass('display');
+		$('.heading').html('Authenticating').addClass('logging');
+		$('.form-group, button, form a, h3, .social, .register, .message, .text-danger').hide();
+		$.ajax({
+				type:"POST",
+				url: "{% url 'login' %}",
+				data: {
+					'name': $('#name input').val(),
+					'password': $('#password input').val(),
+					'csrfmiddlewaretoken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					if (data.url == 'home') {
+						setTimeout(function() {
+						window.location.href = "{% url 'home' %}"
+				}, 7000);
+						setTimeout(function() {
+						$('.heading').html('Authentication successfull Redirecting');
+				}, 3000);
+			}
+			 	else {
+					setTimeout(function() {
+					$('.form-group, button, form a, h3, .social, .register, .message, .text-danger').show();
+					$('#loading').removeClass('logging').addClass('display');
+					$('.heading').html('Login').removeClass('logging');
+					$('.message').html(data.message + '<br><br>');
+					$('input').val('').addClass('incorrect').removeClass('correct');
+				}, 5000);
+			}
+		},
+	})
+});
+</script>
+<script type="text/javascript" src="{% static 'js/register.js' %}"></script>
+{% endblock %}

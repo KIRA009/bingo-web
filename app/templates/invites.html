@@ -1,0 +1,129 @@
+{% extends 'game.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}">
+{% endblock %}
+{% block title %}Invites{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-lg-6 col-12">
+			<p style="background-color: #fdd941; padding-left: 10px;">Send</p>
+			<div class="text-left">
+				{% if ls != 0 %}
+					{% for invites in sent_invites %}
+						<img src={% if invites.to_user.image == '' %} "https://ui-avatars.com/api/?rounded=true&name={{ invites.to_user.name }}" {% else %} "{{ invites.to_user.image }}" {% endif %} width="50px" height="50px" style="float: left; margin-right: 25px;">
+						{{ invites.to_user.name }}<br>
+						<span>{{ invites.key }}</span><br><br>
+						<a style="float: right; position:relative; top: -80px; text-decoration: none; color: #fff;" {% if invites.accepted %} href="/app/startGame?k={{ invites.key }}" {% endif %} class="menu accept">{% if invites.accepted %}Start Game{% else %} Not Accepted {% endif %}</a>
+					{% endfor %}
+				{% else %}
+					No invites sent yet<br><br>
+				{% endif %}
+			</div>
+			<hr style="width: 100%; border: 2px solid #000; clear: both;">
+			{% if lf != 0 %}
+				<form action="{% url 'invites' %}" method="post">
+					{% csrf_token %}
+				    <div class="form-group">
+					    <input type="text" class="form-control notcorrect" id="key" placeholder="Enter key" name="key">
+					    <p style="font-size: 1.1em; font-weight: bolder;"><small class="message" style="margin-bottom:20px; color: #000; display: none;"><br></small></p>
+					</div>
+					<div class="form-group">
+						<div class="form-group">
+							<label for="sel1">Select Friend:</label>
+							<select class="form-control" id="sel1" name="friend">
+								{% for friend in friends %}
+									<option>{{ friend.to_user.name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<button type="submit" class="btn menu initiate" style="top:0; float: none;">Initiate Game</button><br>
+				</form><br><br>
+			{% else %}
+				No friends yet<br><br>
+			{% endif %}
+		</div>
+		<div class="col-lg-6 col-12">
+			<p style="background-color: #fdd941; padding-left: 10px;">Received</p>
+			<div class="text-right">
+				{% if lr != 0 %}
+					{% for invites in received_invites %}
+					<div>
+						<img src={% if invites.from_user.image == '' %} "https://ui-avatars.com/api/?rounded=true&name={{ invites.from_user.name }}" {% else %} "{{ invites.from_user.image }}" {% endif %} width="50px" height="50px" style="float: right; margin-left: 25px;">
+						{{ invites.from_user.name }}<br>
+						<span style="margin-right: -12px;" id="key1">{{ invites.key }}</span>
+						<form action="{% url 'accept_invite' %}" method="post" style="margin-top: -30px; float: left;" class="request">
+							{% csrf_token %}
+							<input type="hidden" name="key" class="key">
+						  	<button type="submit" class="btn menu" style="top:0; float: none;">Accept</button><br><br>
+						  	<h2 class="btn menu decline" style="top:0; left:5px; float: none;">Decline</h2><br>
+						</form><br><br><br>
+						<hr style="width: 100%; border: 2px solid #000; clear: both;">
+					</div>
+					{% endfor %}
+				{% else %}
+					No invites received yet
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+	$('.decline').click(function() {
+		$this = $(this);
+		$key = $('#key1').html();
+		$.ajax({
+				type:"GET",
+				url: 'remove_game/' + $key + '/',
+				success: function(data) {
+					$this.parent().parent().remove();
+			},
+		})
+	});
+
+	$('.request').submit(function(e) {
+		e.preventDefault();
+		$key = $('#key1').html();
+		$(this).children('.key').val($key);
+		$(this).unbind('submit').submit();
+	});
+
+	$('#key').keyup(function() {
+	  l = $(this).val().length;
+	  if (l == '10')
+	    {
+	      $(this).removeClass('incorrect').removeClass('notcorrect');
+	      $(this).addClass('correct');
+	      $('.message').hide();
+	    }
+	  else if (l == 0) {
+	      $('.message').hide();
+	      $(this).removeClass('correct');
+	      $(this).addClass('incorrect');
+	    }
+	  else
+	    {
+	      $(this).removeClass('correct');
+	      $(this).addClass('incorrect');
+	      $(this).addClass('notcorrect');
+	      $('.message').show();
+	      $('.message').html('Key should be 10 characters long');
+	    }
+	});
+
+	$('.initiate').click(function(e) {
+		if ($('#key').hasClass('notcorrect'))
+			e.preventDefault();
+	});
+
+	$('.accept').click(function() {
+		if ($(this).html() == "Start Game") {
+			
+		}
+	});
+</script>
+{% endblock %}

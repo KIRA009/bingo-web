@@ -1,0 +1,30 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.index, name='index'),
+    path('register/', views.Register.as_view(), name='register'),
+    path('update_img/', views.update_img, name='update_img'),
+    path('login/', views.Login.as_view(), name='login'),
+    path('logout/', views.log_out, name='logout'),
+    path('validate/<str:secret>', views.validate, name='validate'),
+    path('forgot/', views.Forgot.as_view(), name='forgot'),
+    path('reset/<str:reset>', views.Reset.as_view(), name='reset'),
+    path('home/', views.Home.as_view(), name='home'),
+    path('records/', views.records, name='records'),
+    path('invites/', views.Invites.as_view(), name='invites'),
+    path('invites/accept', views.accept_invite, name='accept_invite'),
+    path('requests/', views.Requests.as_view(), name='requests'),
+    path('requests/send', views.send_request, name='send_request'),
+    path('requests/decline/<str:friend>/', views.decline_request, name='decline_request'),
+    path('requests/accept/<str:friend>/', views.accept_request, name='accept_request'),
+    path('random/', views.random_num, name='random'),
+    path('key_check/', views.game_check, name='key_check'),
+    path('invites/remove_game/<str:key>/', views.remove_game, name='remove_game'),
+    path('startGame/', views.start_game, name='startGame'),
+    path('getOpp/', views.get_opp, name='get_opp'),
+    path('data/<str:key>/', views.data, name='data'),
+    path('game/<str:key>/', views.game_play, name='game'),
+    path('update/<str:key>/<str:opponent>/<str:winner>/', views.update_game, name='update'),
+    path('update/<str:key>/<str:opponent>/', views.update_game, name='def_update'),
+]

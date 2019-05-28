@@ -1,0 +1,78 @@
+{% extends 'game.html' %}
+{% load static %}
+{% block title %}Initialise Game {% endblock %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}">
+{% endblock %}
+{% block tabs %}
+	<a href="{% url 'home'%}">End Game <span class="sr-only">(current)</span></a>
+	<a class='close'>Close</a>
+{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-lg-6 text-center">
+			<caption><h1 style="font-weight: bolder; font-family: 'Zorque';"><span style="margin-left: 10px; margin-right: 10px;">B</span><span style="margin-left: 10px; margin-right: 10px;">I</span><span style="margin-left: 10px; margin-right: 10px;">N</span><span style="margin-left: 10px; margin-right: 10px;">G</span><span style="margin-left: 10px; margin-right: 10px;">O</span></h1></caption>
+			<table class="table table-bordered table-dark" style="height: 500px;">
+			  	<tbody>
+			  		{% for row in 'admin' %}
+			  		<tr class="text-center">
+			  			{% for col in 'admin' %}
+			    		<th class="align-middle" scope="col" width="100px">0</th>
+			    		{% endfor %}
+			    	</tr>
+			    	{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div class="col-lg-6 text-center key" key={{ key }}>
+			<div class="container">
+				Your opponent:<br><br>
+				<h1 class="opp">
+					{% if opponent != '' %}
+						{{ opponent }}
+					{% else %}
+						No one has joined yet
+					{% endif %}
+				 </h1>
+				<br><br>
+				<button class="menu reset" style="float: none; top: 0;">Reset</button>
+				<br><br>
+				<span class="message"></span><br><br>
+				<form method="post" action="{% url 'data' key=key %}">
+					{% csrf_token %}
+					<input type="text" name="data" style="display: none;">
+					<input type="text" name="opponent" value="{{ opponent }}" style="display: none;" class="oppo">
+					<button class="menu submit" type="submit" style="float: none; top: 0; display: none;">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+	function z() {
+		$key = $('.key').attr('key');
+		$.ajax({
+				type:"POST",
+				url: "{% url 'get_opp' %}",
+				data: {
+					'key': $key,
+					'csrfmiddlewaretoken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					if (data.opponent != null) {
+						$('.opp').html(data.opponent);
+						$('.oppo').val(data.opponent);
+						$('button[type="submit"]').show();
+						clearInterval(q);
+				}
+			},
+		})
+	}
+	z();
+	var q = setInterval(z, 3000);
+</script>
+<script type="text/javascript" src="{% static 'js/game.js' %}"></script>
+{% endblock %}

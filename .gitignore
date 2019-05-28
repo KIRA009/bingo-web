@@ -1,0 +1,7 @@
+Scripts/
+tcl/
+Lib/
+Include/
+.idea/
+db.sqlite3
+config.ini

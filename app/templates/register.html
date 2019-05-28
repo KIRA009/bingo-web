@@ -1,0 +1,92 @@
+{% extends "index.html" %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/register.css' %}">
+{% endblock %}
+	{% block content %}
+		<div class="col-lg-6">
+			<form method="post" enctype="multipart/form-data">
+				{% csrf_token %}
+				<div class="col-12">
+					<h1 class="heading">Get Started</h1>
+					<div id="loading" class="d-flex justify-content-center display">
+						<div class='cube col-12 text-center'>
+				      		<div class='face right'></div>
+				      		<div class='face left'></div>
+				      		<div class='face top'></div>
+				    	</div>
+					</div>
+				<br>
+				<div class="form-group text-left" id="email">
+					<input type="email" name="email" class="form-control" autocomplete="off" placeholder="Email">
+				</div>
+				<div class="form-group text-left" id="name">
+					<input type="name" name="name" class="form-control" placeholder="Username">
+				</div>
+				<div class="form-group text-left" id="password">
+					<input type="password" name="password" class="form-control" placeholder="Password">
+				</div>
+				<div class="form-group text-left" id="cnfmpassword">
+					<input type="password" class="form-control" placeholder="Confirm Password">
+				</div>
+				<small class="text-danger message" style="font-size: 1.1em;"></small><br>
+				<button class="register" type="submit" style="font-family: 'Raleway'; padding: 5px 15px; letter-spacing: 1px;">REGISTER</button>
+			</form>
+			<br><br><h3>or register using</h3>
+			<div class="col-12 text-center">
+				<a href="" class="btn"><i class="fa fa-icon fa-facebook"></i></a>
+				<a href="" class="btn"><i class="fa fa-icon fa-google-plus"></i></a>
+			</div>
+			<div class="col-12 text-center text-danger" style="font-size: 1.2em;">
+				Already registered? <a href="{% url 'login' %}" class="text-secondary" style="text-decoration: none;"> Login Here </a>
+			</div>
+		</div>
+	{% endblock %}
+{% block js %}
+<script type="text/javascript">
+	$('button[type="submit"]').click(function(e) {
+		if ( (!$('#name input').hasClass('correct')) || (!$('#password input').hasClass('correct')) || (!$('#email input').hasClass('correct')) || (!$('#cnfmpassword input').hasClass('correct')) ) {
+			$('.message').html('All field requirements have not been fulfilled');
+			e.preventDefault();
+			return false;
+		}
+		e.preventDefault();
+		$('#loading').addClass('logging').removeClass('display');
+		$('.heading').html('Registering').addClass('logging');
+		$('.form-group, button, form a, h3, .social, .register, .message').hide();
+		$.ajax({
+				type:"POST",
+				url: "{% url 'register' %}",
+				enctype: 'multipart/form-data',
+				data: {
+					'name': $('#name input').val(),
+					'email': $('#email input').val(),
+					'password': $('#password input').val(),
+					'csrfmiddlewaretoken': '{{ csrf_token }}'
+				},
+				
+				success: function(data) {
+					if (data.url == 'login') {
+						setTimeout(function() {
+						window.location.href = "{% url 'login' %}"
+				}, 7000);
+						setTimeout(function() {
+						$('.heading').html('Registration successfull. Redirecting');
+				}, 3000);
+
+			}	
+			 	else {
+					setTimeout(function() {
+					$('.form-group, button, form a, h3, .social, .register, .message').show();
+					$('#loading').removeClass('logging').addClass('display');
+					$('.heading').html('Get Started').removeClass('logging');
+					$('.message').html(data.message);
+					$('input').val('').addClass('incorrect').removeClass('correct');
+				}, 5000);
+			}
+		},
+	})
+});
+</script>
+<script type="text/javascript" src="{% static 'js/register.js' %}"></script>
+{% endblock %}

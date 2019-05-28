@@ -1,0 +1,54 @@
+{% load pwa %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% progressive_web_app_meta %}
+    <title>Bingo - The Game</title>
+    <link rel="icon" href="{% static 'images/logo.ico'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    {% block css %}{% endblock %}
+</head>
+<body>
+<header class="justify-content-center" style="background-color: #132168; padding: 5px 15px;">
+  <a href="/app/"><img src="/static/images/logo.png" height="80px" width="200px" style="background-color: none;"></a>
+  <button class="menu">MENU</button>
+</header>
+<div id="sidebar">
+  <a href="/app/login/">Login</a>
+  <a href="/app/register/">Register</a>
+  <a class="close">Close</a>
+</div>
+{% block alert %}{% endblock %}
+<div class="container text-center">
+	<div class="row justify-content-center" style="margin-top: 40px;">
+		{% block content %}
+      <h1>Welcome To Bingo<br><br></h1>
+      <p> An online platform where you can have fun with your friends and family<br><br></p>
+      <button id="rules" type="button" class="btn">Rules </button>
+  </div>
+  <div class="text-left">
+    <ul class="rules">
+      <li>This game is played by 2 players at a time</li>
+      <li>Each player is required to design a 5 &#10005; 5 board having 25 boxes, each of which has to be filled with exactly one number between 1 and 25 (both inclusive). The letters BINGO will be written on top of the board.<br>The game is started by one of the two players, selected randomly by the computer.</li>
+      <li>The player calls out a number between 1 and 25 (both inclusive), and both of them strike out that number from their respective boards. Both players take turns in repeating the same move.</li>
+      <li>When all 5 numbers in a line, whether horizontal, vertical or diagonal, are struck out, the player can strike out one of the letters from BINGO.</li>
+      <li>First player whose BINGO gets struck out completely, wins. If both players have their BINGO's struck out in the same move, the game's a draw</li>
+      <a href="{% url 'register' %}" class="btn btn-primary" style="word-spacing: initial;"> Get started </a>
+    </ul>
+    {% endblock %}
+	</div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% block js %}{% endblock %}
+</body>
+</html>

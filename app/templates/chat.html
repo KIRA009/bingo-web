@@ -1,0 +1,40 @@
+{% extends 'game.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}">
+{% endblock %}
+{% block title %}Invites{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-lg-6 col-12">
+			<p style="background-color: #fdd941; padding-left: 10px;">Sent</p>
+			<div class="text-left">
+				<img src="https://ui-avatars.com/api/?rounded=true&name=Kira" width="50px" height="50px" style="float: left; margin-right: 25px;">
+				Name<br>
+				Message<br><br>
+				<img src="https://ui-avatars.com/api/?rounded=true&name=Kira" width="50px" height="50px" style="float: left; margin-right: 25px;">
+				Name<br>
+				Message<br><br>
+				<img src="https://ui-avatars.com/api/?rounded=true&name=Kira" width="50px" height="50px" style="float: left; margin-right: 25px;">
+				Name<br>
+				Message<br><br>
+			</div>
+		</div>
+		<div class="col-lg-6 col-12">
+			<p style="background-color: #fdd941; padding-left: 10px;">Received</p>
+			<div class="text-right">
+				<img src="https://ui-avatars.com/api/?rounded=true&name=Kira" width="50px" height="50px" style="float: right; margin-left: 25px;">
+				Name<br>
+				Message<br><br>
+				<img src="https://ui-avatars.com/api/?rounded=true&name=Kira" width="50px" height="50px" style="float: right; margin-left: 25px;">
+				Name<br>
+				Message<br><br>
+				<img src="https://ui-avatars.com/api/?rounded=true&name=Kira" width="50px" height="50px" style="float: right; margin-left: 25px;">
+				Name<br>
+				Message<br><br>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

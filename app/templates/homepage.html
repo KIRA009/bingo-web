@@ -1,0 +1,78 @@
+{% extends 'game.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}">
+{% endblock %}
+{% block content %}
+<br><br>
+<div class="container">
+	<div class="row">
+		<div class="col-12">
+			{% if user.image == '' %}
+			<label class="btn" style="float: left; margin-right: 20px;">
+				<img src="https://ui-avatars.com/api/?rounded=true&name={{ user.name }}" width="150px" height="150px">
+				<form action="{% url 'update_img' %}" method="post" enctype="multipart/form-data">
+					{% csrf_token %}
+					<input type="file" style="display: none;" name="image" accept=".png, .jpg"><br>
+					<input type="submit" value="Update" style="display: none; float: none; top: 0;" class="menu">
+				</form>
+            </label>
+			{% else %}
+				<img src="{{ user.image }}" width="200px" height="200px" style="float: left; margin-right: 20px; clear: right; border-radius: 50%;">
+			{% endif %}
+			{{ user.name }}<br><br>
+			{% with wins=record.wins|floatformat:"0" losses=record.losses|floatformat:"0" draws=record.draws|floatformat:"0" %}
+			Games Played: {{ wins|add:losses|add:draws }}<br><br>
+			{% endwith %}
+			Last Match: 
+			{% if record.last_match != '' %}
+				{{ record.last_match }}
+			{% else %}
+				No matches played yet
+			{% endif %}
+		</div>
+	</div>
+<br><br>
+	<div class="row">
+		<div class="col-lg-6">
+			<fieldset class="text-center">
+		    	<legend>Start New Game</legend>
+		    	<span id="random" class="noselect"> {{ random }} </span><br><br>
+		    	<a href="{% url 'random' %}" class="btn menu" style="top:-5px; float: none;"> Generate new key </a><br>
+		  	</fieldset>
+		</div>
+		<div class="col-lg-6">
+			<form action="{% url 'key_check' %}" method="post">
+				{% csrf_token %}
+				<fieldset>
+			    	<legend>Join a Game</legend>
+			    	<div class="form-group">
+				    	<input type="text" class="form-control notcorrect" id="key" placeholder="Enter key" name="key">
+				  	</div>
+				  	<p style="font-size: 1.1em; font-weight: bolder;"><small class="message" style="margin-bottom:20px; color: #000; {% if error == '' %} display: none; {% endif %}">{{ error }}<br></small></p>
+				  	<button type="submit" class="btn menu initiate" style="top:0; float: none;">Initiate Game</button><br>
+			  </fieldset>
+			</form>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+	$('a.menu').click(function(e) {
+		e.preventDefault();
+		$.ajax({
+				type:"GET",
+				url: "{% url 'random' %}",
+				success: function(data) {
+					$('#random').html(data.random);
+			},
+		})
+	});
+	$('.initiate').click(function(e) {
+		if ($('#key').hasClass('notcorrect'))
+			e.preventDefault();
+	});
+</script>
+<script type="text/javascript" src="{% static 'js/game.js' %}"></script>
+{% endblock %}

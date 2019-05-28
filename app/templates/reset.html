@@ -1,0 +1,45 @@
+{% extends "index.html" %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/register.css' %}">
+{% endblock %}
+	{% block content %}
+		<div class="col-lg-6" class="text-center">
+			<form method="post" action="{% url 'reset' reset=reset %}">
+				{% csrf_token %}
+				<div class="col-12">
+					<h1 class="heading">Reset</h1>
+					<div id="loading" class="d-flex justify-content-center display">
+						<br><br><div class='cube col-12 text-center'>
+			      			<div class='face right'></div>
+			      			<div class='face left'></div>
+			      			<div class='face top'></div>
+			    		</div>
+					</div>
+				<br>
+				<div class="form-group" id="email">
+					<input type="email" name="email" class="form-control" placeholder="Email" autocomplete="off">
+				</div>
+				<div class="form-group" id="password">
+					<input type="password" name="password" class="form-control" placeholder="Password" autocomplete="off">
+				</div>
+				<div class="form-group" id="cnfmpassword">
+					<input type="password" name="" class="form-control" placeholder="Confirm Password" autocomplete="off">
+				</div>
+				<small class="text-danger message" style="font-size: 1.1em;"></small><br>
+				<button class="register" type="submit" style="font-family: 'Raleway'; padding: 5px 15px; letter-spacing: 1px; margin-bottom: 10px;">SEND RESET LINK</button><br>
+			</form>
+		</div>
+	{% endblock %}
+{% block js %}
+<script type="text/javascript">
+	$('button[type="submit"]').click(function(e) {
+		if ( (!$('#email input').hasClass('correct')) || (!$('#password input').hasClass('correct')) || (!$('#cnfmpassword input').hasClass('correct')) ) {
+			$('.message').html('All field requirements have not been fulfilled');
+			e.preventDefault();
+			return false;
+		}
+});
+</script>
+<script type="text/javascript" src="{% static 'js/register.js' %}"></script>
+{% endblock %}

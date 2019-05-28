@@ -1,0 +1,88 @@
+{% extends 'game.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}">
+{% endblock %}
+{% block title %}Invites{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-lg-6 col-12">
+			<p style="background-color: #fdd941; padding-left: 10px;">Friends</p>
+			{% if lf != 0 %}
+				{% for friend in friends %}
+					<img src={% if friend.to_user.image == '' %} "https://ui-avatars.com/api/?rounded=true&name={{ friend.to_user.name }}" {% else %} "{{ friend.to_user.image }}" {% endif %} width="50px" height="50px">
+					{{ friend.to_user.name }}<br><br>
+				{% endfor %}
+			{% else %}
+				No friends yet
+			{% endif %}
+			<br><br><br>
+			<hr style="width: 100%; border: 2px solid #000; clear: both;">
+			{% if lu != 0 %}
+				<form action="{% url 'send_request' %}" method="post">
+					{% csrf_token %}
+					<div class="form-group">
+						<div class="form-group">
+							<label for="sel1">Select User:</label>
+							<select class="form-control" id="sel1" name="friend">
+								{% for user in users %}
+									<option>{{ user.name }}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<button type="submit" class="btn menu initiate" style="top:0; float: none;">Send friend request</button><br><br>
+				</form>
+			{% else %}
+				Congrats!!! All existing users are your friends<br><br>
+			{% endif %}
+		</div>
+		<div class="col-lg-6 col-12">
+			<p style="background-color: #fdd941; padding-left: 10px;">Received Requests</p>
+			<div class="text-right">
+				{% if l != 0 %}
+					{% for req in friend_reqs %}
+					<div>
+						<img src={% if req.from_user.image == '' %} "https://ui-avatars.com/api/?rounded=true&name={{ req.from_user.name }}" {% else %} "{{ req.from_user.image }}" {% endif %} width="50px" height="50px" style="float: right; margin-left: 25px;">
+						<span id="name">{{ req.from_user.name }}</span><br>
+						<form method="post" style="margin-top: -30px; float: left;" class="req">
+							{% csrf_token %}
+							<input type="hidden" name="name" class="name">
+						  	<button type="submit" class="btn menu initiate" style="top:0; float: none;">Accept</button><br><br>
+						  	<h2 class="btn menu decline" style="top:0; left:5px; float: none;">Decline</h2><br>
+						</form><br><br><br>
+						<hr style="width: 100%; border: 2px solid #000; clear: both;">
+					</div>
+					{% endfor %}
+				{% else %}
+					No requests received yet
+				{% endif %}
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+	$('.decline').click(function() {
+		$this = $(this);
+		$name = $('#name').html();
+		$.ajax({
+				type:"GET",
+				url: 'decline/' + $name + '/',
+				success: function(data) {
+					$this.parent().parent().remove();
+			},
+		})
+	});
+
+	$('form').submit(function(e) {
+		e.preventDefault();
+		$name = $('#name').html();
+		$('.req').attr('action', 'accept/' + $name + '/');
+		$(this).children('.name').val($name);
+		$(this).unbind('submit').submit();
+	});
+</script>
+{% endblock %}

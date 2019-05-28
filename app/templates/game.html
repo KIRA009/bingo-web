@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Homepage{% endblock %}</title>
+    <link rel="icon" href="{% static 'images/logo.ico'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+    {% block css %}{% endblock %}
+</head>
+<body>
+	<header class="justify-content-center" style="background-color: #132168; padding: 5px 15px;">
+	<a href="{% url 'index' %}"><img src="{% static 'images/logo.png' %}" height="80px" width="200px" style="background-color: none;"></a>
+  <button class="menu">MENU</button>
+</header>
+<div id="sidebar">
+  {% block tabs %}
+  <a href="{% url 'home' %}">HOME</a>
+  <a href="{% url 'records' %}">RECORDS</a>
+  <a href="{% url 'invites' %}">GAME INVITES</a>
+  <a href="{% url 'requests' %}">FRIEND REQUESTS</a>
+  <a href="{% url 'logout' %}">Logout {{ user.name }}</a>
+  <a class='close'>Close</a>
+  {% endblock %}
+</div>
+<div style="margin-top: 40px;">
+	{% block content %}{% endblock %}
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="{% static 'js/index.js' %}"></script>
+{% block js %}{% endblock %}
+</body>
+</html>

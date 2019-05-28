@@ -1,0 +1,111 @@
+{% extends 'game.html' %}
+{% load static %}
+{% block title %}Records{% endblock %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}">
+{% endblock %}
+{% block content %}
+<div class="container" style="word-spacing: initial;">
+	<h1>Your Game Records</h1>
+	<div class="row records">
+		<div class="col-lg col-12 head active" id="front">
+			WINS
+		</div>
+		<div class="col-lg col-12 head" id="back">
+			LOSSES
+		</div>
+		<div class="col-lg col-12 head" id="right">
+			DRAWS
+		</div>
+		<div class="col-lg col-12 head" id="left">
+			HIGHEST WIN STREAK
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6 ml">
+			<div class="scene">
+				<div class="cube">
+			    	<div class="cube__face cube__face--front wins">{{ record.wins }}</div>
+				    <div class="cube__face cube__face--back losses">{{ record.losses }}</div>
+				    <div class="cube__face cube__face--right">{{ record.draws }}</div>
+				    <div class="cube__face cube__face--left">{{ record.h_win_streak }}</div>
+			  	</div>
+			</div>
+		</div>
+	</div>
+	<h1>Last three games</h1>
+		<div class="container mt-40">
+            <div class="row mt-30">
+                {% if record.last_p1 is not None %}
+                <div class="col-md-4 col-sm-6">
+                    <div class="box16">
+                    {% if record.last_p1.image == '' %}
+                        <img src="https://ui-avatars.com/api/?rounded=false&name={{ record.last_p1.name }}" width="150px" height="150px">
+                    {% else %}
+                        <img src="{{ record.last_p1.image }}" width="200px" height="200px" style="float: left; margin-right: 20px; clear: right; border-radius: 50%;">
+                    {% endif %}
+                        <div class="box-content">
+                            <h3 class="title">{{ record.last_p1.name }}</h3>
+                            <span class="post {{ record.res_p1|lower }}" id="p1">{{ record.res_p1 }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if record.last_p2 is not None %}
+                <div class="col-md-4 col-sm-6">
+                    <div class="box16">
+                    {% if record.last_p2.image == '' %}
+                        <img src="https://ui-avatars.com/api/?rounded=false&name={{ record.last_p2.name }}" width="150px" height="150px">
+                    {% else %}
+                        <img src="{{ record.last_p2.image }}" width="200px" height="200px" style="float: left; margin-right: 20px; clear: right; border-radius: 50%;">
+                    {% endif %}
+                        <div class="box-content">
+                            <h3 class="title">{{ record.last_p2.name }}</h3>
+                            <span class="post {{ record.res_p2|lower }}" id="p2">{{ record.res_p2 }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if record.last_p3 is not None %}
+                <div class="col-md-4 col-sm-6">
+                    <div class="box16">
+                    {% if record.last_p3.image == '' %}
+                        <img src="https://ui-avatars.com/api/?rounded=false&name={{ record.last_p3.name }}" width="150px" height="150px">
+                    {% else %}
+                        <img src="{{ record.last_p3.image }}" width="200px" height="200px" style="float: left; margin-right: 20px; clear: right; border-radius: 50%;">
+                    {% endif %}
+                        <div class="box-content">
+                            <h3 class="title">{{ record.last_p3.name }}</h3>
+                            <span class="post {{ record.res_p3|lower }}" id="p3">{{ record.res_p3 }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+</div><br><br><br><br><br>
+{% endblock %}
+{% block js %}
+<script type="text/javascript">
+    $('.box16').mouseenter(function() {
+        $title = $(this).children('.box-content').children('.post');
+        $title.addClass('record')
+        $id = $title.attr('id');
+        if ($id == "p1")
+            $title.html('WINS: {{ record.last_p1.record.wins }}<br>LOSSES: {{ record.last_p1.record.losses }}<br>DRAWS: {{ record.last_p1.record.draws }}');
+        else if ($id == "p2")
+            $title.html('WINS: {{ record.last_p2.record.wins }}<br>LOSSES: {{ record.last_p2.record.losses }}<br>DRAWS: {{ record.last_p2.record.draws }}');
+        else if ($id == "p3")
+            $title.html('WINS: {{ record.last_p3.record.wins }}<br>LOSSES: {{ record.last_p3.record.losses }}<br>DRAWS: {{ record.last_p3.record.draws }}');
+    });
+    $('.box16').mouseleave(function() {
+        $title = $(this).children('.box-content').children('.post');
+        $title.removeClass('record')
+        if ($title.hasClass('win'))
+            $title.html('WIN');
+        else
+            $title.html('LOSS');
+    });
+</script>
+<script type="text/javascript" src="{% static 'js/game.js' %}"></script>
+{% endblock %}

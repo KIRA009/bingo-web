@@ -1,0 +1,166 @@
+{% extends 'game.html' %}
+{% load static %}
+{% block title %}Initialise Game {% endblock %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game.css' %}">
+{% endblock %}
+{% block tabs %}
+	<a href="{% url 'home'%}">End Game <span class="sr-only">(current)</span></a>
+	<a class='close'>Close</a>
+{% endblock %}
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-lg-6 text-center">
+			<caption><h1 class="cap" style="font-weight: bolder; font-family: 'Zorque';"><span style="margin-left: 10px; margin-right: 10px;">B</span><span style="margin-left: 10px; margin-right: 10px;">I</span><span style="margin-left: 10px; margin-right: 10px;">N</span><span style="margin-left: 10px; margin-right: 10px;">G</span><span style="margin-left: 10px; margin-right: 10px;">O</span></h1></caption>
+			<table class="table table-bordered table-dark" style="height: 500px;">
+			  	<tbody player="{{ cur_player }}" count = "" winner="">
+			  		{% for row in data %}
+			  		<tr class="text-center">
+			  			{% for col in row %}
+			    		<th class="align-middle" scope="col" width="100px">{{ col }}</th>
+			    		{% endfor %}
+			    	</tr>
+			    	{% endfor %}
+				</tbody>
+			</table>
+		</div>
+		<div class="col-lg-6 text-center">
+			<div class="container">
+				Your opponent:<br>
+				<h1>{{ opponent }}</h1>
+				<br>
+				<span class="message" style="display: none;">Select a number<br><br></span>
+				<form method="post">
+					{% csrf_token %}
+					<input type="text" name="opponent" class="opponent" value="{{ opponent }}" style="display: none;">
+					<button class="menu submit" type="submit" style="float: none; top: 0;">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}
+{% block js %}
+<script type="text/javascript" src="{% static 'js/game_play.js' %}"></script>
+<script type="text/javascript">
+	if ($('tbody').attr('player') == $('.opponent').val()) {
+		$('button[type="submit"]').hide();
+		function z() {
+			$.ajax({
+			type:"GET",
+			url: "{% url 'def_update' key=key opponent=opponent %}",
+			success: function(data) {
+				$('button[type="submit"]').hide();
+				var winner = data.winner;
+				if (winner != "none") {
+					if (winner === $('.opponent').val())
+						alert('Lost');
+					else if (winner === "both")
+						alert('Draw');
+					else
+						alert('Won');
+					window.location = document.location.origin + "/app/home/";
+				}
+				if (data.cur_player != $('.opponent').val()) {
+					$('.align-middle').each(function() {
+					    if ($(this).html() == data.cur_num)
+					      $(this).removeClass('new').addClass('old');
+					  });
+					$('tbody').attr('count', data.count);
+					$('button[type="submit"]').show();
+					var count = parseInt($('tbody').attr('count'), 10);
+					$('.cap span').each(function() {
+						if ($(this).index() < count)
+							$(this).css('text-decoration', 'line-through');
+						else
+							return false;
+					});
+					clearInterval(q);
+				}}
+		});
+		var count = parseInt($('tbody').attr('count'), 10);
+		$('.cap span').each(function() {
+			if ($(this).index() < count)
+				$(this).css('text-decoration', 'line-through');
+			else
+				return false;
+		});
+	}
+	z();
+	var q = setInterval(z, 3000);
+	}
+
+	$('button[type="submit"]').click(function(e) {
+		$val = 0;
+		$('.align-middle').each(function() {
+		    if ($(this).hasClass('new')) {
+		      $(this).removeClass('new').addClass('old');
+		      $val = $(this).html();
+		    }
+		  });
+		if ($val == 0) {
+			$('.message').show();
+			return false;
+		}
+		$('.message').hide();
+		$('button[type="submit"]').hide();
+		e.preventDefault();
+		$.ajax({
+				type:"POST",
+				url: "{% url 'game' key=key %}",
+				data: {
+					'data': $val,
+					'opponent': $('.opponent').val(),
+					'csrfmiddlewaretoken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					$('tbody').attr({'player': $('.opponent').val(), 'count': data.count});
+					function k() {
+						$.ajax({
+						type:"GET",
+						url: "{% url 'def_update' key=key opponent=opponent %}",
+						success: function(data) {
+							var winner = data.winner;
+							if (winner != "none") {
+								if (winner === $('.opponent').val())
+									alert('Lost');
+								else if (winner === "both")
+									alert('Draw');
+								else
+									alert('Won');
+								window.location = document.location.origin + "/app/home/";
+							}
+							if (data.cur_player != $('.opponent').val()) {
+								$('.align-middle').each(function() {
+									if ($(this).html() == data.cur_num) {
+										$(this).removeClass('new').addClass('old');
+									}
+								});
+							$('tbody').attr('count', data.count);
+							$('button[type="submit"]').show();
+							var count = parseInt($('tbody').attr('count'), 10);
+							$('.cap span').each(function() {
+								if ($(this).index() < count)
+									$(this).css('text-decoration', 'line-through');
+								else
+									return false;
+							});
+							clearInterval(x);
+						}}
+					});
+					var count = parseInt($('tbody').attr('count'), 10);
+					$('.cap span').each(function() {
+						if ($(this).index() < count)
+							$(this).css('text-decoration', 'line-through');
+						else
+							return false;
+					});
+				}
+				k();
+						var x = setInterval(k, 3000);
+					}
+		});
+});
+</script>
+{% endblock %}

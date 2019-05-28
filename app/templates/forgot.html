@@ -1,0 +1,70 @@
+{% extends "index.html" %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/register.css' %}">
+{% endblock %}
+	{% block content %}
+		<div class="col-lg-6" class="text-center">
+			<form method="post">
+				{% csrf_token %}
+				<div class="col-12">
+					<h1 class="heading">Forgot</h1>
+					<div id="loading" class="d-flex justify-content-center display">
+						<br><br><div class='cube col-12 text-center'>
+			      			<div class='face right'></div>
+			      			<div class='face left'></div>
+			      			<div class='face top'></div>
+			    		</div>
+					</div>
+				<br>
+				<div class="form-group" id="email">
+					<input type="email" name="email" class="form-control" placeholder="Email" autocomplete="off">
+				</div>
+				<small class="text-danger message" style="font-size: 1.1em;"></small><br>
+				<button class="register" type="submit" style="font-family: 'Raleway'; padding: 5px 15px; letter-spacing: 1px; margin-bottom: 10px;">SEND RESET LINK</button><br>
+			</form>
+		</div>
+	{% endblock %}
+{% block js %}
+<script type="text/javascript">
+	$('button[type="submit"]').click(function(e) {
+		/*if !($('#email').hasClass('correct')) {
+			$('.message').html('All field requirements have not been fulfilled');
+			e.preventDefault();
+			return false;
+		}*/
+		e.preventDefault();
+		$('#loading').addClass('logging').removeClass('display');
+		$('.heading').html('Verifying email').addClass('logging');
+		$('.form-group, button, .message').hide();
+		$.ajax({
+				type:"POST",
+				url: "{% url 'forgot' %}",
+				data: {
+					'email': $('#email input').val(),
+					'csrfmiddlewaretoken': '{{ csrf_token }}'
+				},
+				success: function(data) {
+					if (data.url == 'login') {
+						setTimeout(function() {
+						window.location.href = "{% url 'login' %}"
+				}, 7000);
+						setTimeout(function() {
+						$('.heading').html('Email sent, redirecting...');
+				}, 3000);
+			}
+			 	else {
+					setTimeout(function() {
+					$('.form-group, button, .message').show();
+					$('#loading').removeClass('logging').addClass('display');
+					$('.heading').html('Login').removeClass('logging');
+					$('.message').html(data.message);
+					$('input').val('').addClass('incorrect').removeClass('correct');
+				}, 5000);
+			}
+		},
+	})
+});
+</script>
+<script type="text/javascript" src="{% static 'js/register.js' %}"></script>
+{% endblock %}
